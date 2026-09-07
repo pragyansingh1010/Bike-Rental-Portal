@@ -1045,3 +1045,595 @@ function confirmBooking() {
 }
 
 
+// ============================================================
+// DASHBOARD
+// ============================================================
+
+function renderDashboard() {
+
+  const total =
+    bookings.reduce(
+      (sum, item) =>
+        sum + item.total,
+      1248
+    );
+
+  $("#spentStat").textContent =
+    money(total);
+
+  $("#upcomingStat").textContent =
+    bookings.filter(
+      item =>
+        item.status === "upcoming"
+    ).length + 2;
+
+  $("#upcomingPreview").innerHTML = `
+
+    <div
+      class="rental-card"
+      style="border:0;padding:18px 0 0"
+    >
+
+      <div class="rental-thumb">
+        KTM<br>
+        DUKE 390
+      </div>
+
+      <div>
+
+        <h3>
+          KTM Duke 390
+        </h3>
+
+        <p>
+          Sep 11 → Sep 13
+          · San Francisco
+        </p>
+
+        <small>
+          RR-482901 · 2 days
+        </small>
+
+      </div>
+
+      <div class="rental-side">
+
+        <span class="status">
+          upcoming
+        </span>
+
+        <strong>
+          $270
+        </strong>
+
+      </div>
+
+    </div>
+  `;
+}
+
+
+// ============================================================
+// GLOBAL CLICK EVENTS
+// ============================================================
+
+document.addEventListener(
+  "click",
+  event => {
+
+    const target =
+      event.target.closest(
+        "[data-page]," +
+        "[data-fav]," +
+        "[data-details]," +
+        "[data-rent]," +
+        "[data-close]," +
+        "[data-cancel]"
+      );
+
+    if (!target) {
+      return;
+    }
+
+    // Page navigation
+    if (target.dataset.page) {
+
+      showPage(
+        target.dataset.page
+      );
+
+      $("#menuToggle")
+        .classList.remove("open");
+    }
+
+
+    // Favorites
+    if (target.dataset.fav) {
+
+      const id =
+        Number(
+          target.dataset.fav
+        );
+
+      if (favorites.includes(id)) {
+
+        favorites =
+          favorites.filter(
+            item => item !== id
+          );
+
+        toastMessage(
+          "Bike removed from favorites"
+        );
+
+      } else {
+
+        favorites.push(id);
+
+        toastMessage(
+          "Bike added to favorites"
+        );
+      }
+
+      saveState();
+
+      renderFavorites();
+      renderExplore();
+
+      renderCards(
+        bikes.slice(0, 4),
+        "#popularGrid"
+      );
+
+      if (
+        $("#modalBackdrop")
+          .classList
+          .contains("open") &&
+        activeBike
+      ) {
+
+        openDetails(
+          activeBike.id
+        );
+      }
+    }
+
+
+    // Bike details
+    if (target.dataset.details) {
+
+      openDetails(
+        Number(
+          target.dataset.details
+        )
+      );
+    }
+
+
+    // Rent bike
+    if (target.dataset.rent) {
+
+      openBooking(
+        Number(
+          target.dataset.rent
+        )
+      );
+    }
+
+
+    // Close modal
+    if (target.dataset.close) {
+
+      $("#modalBackdrop")
+        .classList.remove("open");
+    }
+
+
+    // Cancel booking
+    if (target.dataset.cancel) {
+
+      const item =
+        bookings.find(
+          item =>
+            item.id ===
+            target.dataset.cancel
+        );
+
+      if (
+        item &&
+        confirm(
+          "Cancel this booking?"
+        )
+      ) {
+
+        item.status =
+          "cancelled";
+
+        saveState();
+
+        renderRentals();
+
+        toastMessage(
+          "Booking cancelled"
+        );
+      }
+    }
+
+  }
+);
+
+
+// ============================================================
+// KEYBOARD EVENTS
+// ============================================================
+
+document.addEventListener(
+  "keydown",
+  event => {
+
+    if (event.key === "Escape") {
+
+      $("#modalBackdrop")
+        .classList.remove("open");
+
+      $("#notificationPanel")
+        .classList.remove("open");
+    }
+
+  }
+);
+
+
+// ============================================================
+// MODAL BACKDROP
+// ============================================================
+
+$("#modalBackdrop")
+  .addEventListener(
+    "click",
+    event => {
+
+      if (
+        event.target.id ===
+        "modalBackdrop"
+      ) {
+
+        event.currentTarget
+          .classList
+          .remove("open");
+      }
+
+    }
+  );
+
+
+// ============================================================
+// THEME TOGGLE
+// ============================================================
+
+$("#themeToggle")
+  .addEventListener(
+    "click",
+    () => {
+
+      document.body
+        .classList
+        .toggle("dark");
+
+      localStorage.setItem(
+        key.theme,
+        document.body.classList.contains(
+          "dark"
+        )
+          ? "dark"
+          : "light"
+      );
+
+    }
+  );
+
+
+// ============================================================
+// LOAD SAVED THEME
+// ============================================================
+
+if (
+  localStorage.getItem(key.theme) ===
+  "dark"
+) {
+
+  document.body
+    .classList
+    .add("dark");
+}
+
+
+// ============================================================
+// NOTIFICATIONS
+// ============================================================
+
+$("#notificationPanel")
+  .classList
+  .remove("open");
+
+$(".notification-trigger")
+  .addEventListener(
+    "click",
+    () =>
+      $("#notificationPanel")
+        .classList
+        .toggle("open")
+  );
+
+$("#markRead")
+  .addEventListener(
+    "click",
+    () => {
+
+      $$(".notification-item")
+        .forEach(
+          item =>
+            item.classList
+              .remove("unread")
+        );
+
+      $("#unreadCount")
+        .style
+        .display = "none";
+    }
+  );
+
+
+// ============================================================
+// MOBILE MENU
+// ============================================================
+
+$("#menuToggle")
+  .addEventListener(
+    "click",
+    () => {
+
+      $(".desktop-nav")
+        .style
+        .display =
+          $(".desktop-nav")
+            .style
+            .display === "flex"
+            ? "none"
+            : "flex";
+
+      $(".desktop-nav")
+        .style
+        .position = "absolute";
+
+      $(".desktop-nav")
+        .style
+        .top = "70px";
+
+      $(".desktop-nav")
+        .style
+        .left = "20px";
+
+      $(".desktop-nav")
+        .style
+        .right = "20px";
+
+      $(".desktop-nav")
+        .style
+        .padding = "20px";
+
+      $(".desktop-nav")
+        .style
+        .background =
+          "var(--surface)";
+
+      $(".desktop-nav")
+        .style
+        .borderRadius = "15px";
+
+      $(".desktop-nav")
+        .style
+        .flexDirection =
+          "column";
+
+      $(".desktop-nav")
+        .style
+        .zIndex = "30";
+    }
+  );
+
+
+// ============================================================
+// FILTER EVENTS
+// ============================================================
+
+[
+  "#bikeSearch",
+  "#typeFilter",
+  "#brandFilter",
+  "#priceFilter",
+  "#availableFilter",
+  "#sortFilter"
+].forEach(
+  selector =>
+    $(selector)
+      .addEventListener(
+        "input",
+        renderExplore
+      )
+);
+
+
+// Price filter display
+
+$("#priceFilter")
+  .addEventListener(
+    "input",
+    () =>
+      $("#priceValue")
+        .textContent =
+          money(
+            $("#priceFilter").value
+          )
+  );
+
+
+// Clear filters
+
+$("#clearFilters")
+  .addEventListener(
+    "click",
+    () => {
+
+      $("#bikeSearch")
+        .value = "";
+
+      $("#typeFilter")
+        .value = "all";
+
+      $("#brandFilter")
+        .value = "all";
+
+      $("#priceFilter")
+        .value = 180;
+
+      $("#availableFilter")
+        .checked = false;
+
+      $("#priceValue")
+        .textContent = "$180";
+
+      renderExplore();
+    }
+  );
+
+
+// ============================================================
+// RENTAL TABS
+// ============================================================
+
+$("#rentalTabs")
+  .addEventListener(
+    "click",
+    event => {
+
+      if (
+        event.target.dataset.tab
+      ) {
+
+        $$(".tabs button")
+          .forEach(
+            button =>
+              button.classList
+                .remove("active")
+          );
+
+        event.target
+          .classList
+          .add("active");
+
+        renderRentals(
+          event.target.dataset.tab
+        );
+      }
+
+    }
+  );
+
+
+// ============================================================
+// CATEGORY CARDS
+// ============================================================
+
+document.addEventListener(
+  "click",
+  event => {
+
+    const category =
+      event.target.closest(
+        ".category-card"
+      );
+
+    if (category) {
+
+      showPage("explore");
+
+      $("#typeFilter")
+        .value =
+          category.dataset.type;
+
+      renderExplore();
+    }
+
+  }
+);
+
+
+// ============================================================
+// CONFIRM BOOKING BUTTON
+// ============================================================
+
+$("#modal")
+  .addEventListener(
+    "click",
+    event => {
+
+      if (
+        event.target.id ===
+        "confirmBooking"
+      ) {
+
+        confirmBooking();
+      }
+
+    }
+  );
+
+
+// ============================================================
+// INITIALIZE BRAND FILTER
+// ============================================================
+
+const brands = [
+  ...new Set(
+    bikes.map(
+      bike => bike.brand
+    )
+  )
+];
+
+brands.forEach(
+  brand =>
+    $("#brandFilter")
+      .insertAdjacentHTML(
+        "beforeend",
+        `<option>${brand}</option>`
+      )
+);
+
+
+// ============================================================
+// INITIAL RENDER
+// ============================================================
+
+renderCards(
+  bikes.slice(0, 4),
+  "#popularGrid"
+);
+
+renderExplore();
+
+renderFavorites();
+
+renderDashboard();
+
+$("#homeStartDate")
+  .textContent =
+    new Date()
+      .toLocaleDateString(
+        "en-US",
+        {
+          month: "short",
+          day: "numeric"
+        }
+      );
