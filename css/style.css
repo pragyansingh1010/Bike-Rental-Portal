@@ -1016,4 +1016,245 @@ footer {
     color:var(--muted);
     font-size:11px
 }
+/* ========================================
+   NOTIFICATIONS
+   ======================================== */
 
+.notification-panel {
+    position:fixed;
+    right:5vw;
+    top:70px;
+    width:320px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:16px;
+    box-shadow:var(--shadow);
+    padding:18px;
+    z-index:20;
+    display:none
+}
+.notification-panel.open {
+    display:block
+}
+.notification-panel .panel-heading button {
+    border:0;
+    background:transparent;
+    color:#82a934;
+    font-size:10px
+}
+.notification-item {
+    display:flex;
+    gap:10px;
+    padding:15px 0;
+    border-bottom:1px solid var(--border)
+}
+.notification-item:last-child {
+    border:0
+}
+.notification-item>span {
+    background:var(--surface-2);
+    width:28px;
+    height:28px;
+    display:grid;
+    place-items:center;
+    border-radius:50%;
+    color:#82a934
+}
+.notification-item p {
+    margin:0;
+    font-size:11px
+}
+.notification-item small {
+    display:block;
+    color:var(--muted);
+    margin-top:5px;
+    line-height:1.4
+}
+
+/* ========================================
+   MODALS & FORMS
+   ======================================== */
+
+.modal-backdrop {
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(10,15,11,.62);
+    z-index:40;
+    place-items:center;
+    padding:20px
+}
+.modal-backdrop.open {
+    display:grid
+}
+.modal {
+    background:var(--surface);
+    border-radius:22px;
+    width:min(550px,100%);
+    max-height:90vh;
+    overflow:auto;
+    padding:28px;
+    position:relative
+}
+.modal-close {
+    position:absolute;
+    right:18px;
+    top:15px;
+    background:var(--surface-2);
+    color:var(--text);
+    border-radius:50%;
+    width:28px;
+    height:28px
+}
+.modal h2 {
+    font:700 25px Manrope;
+    margin:0 0 8px
+}
+.modal>p {
+    color:var(--muted);
+    font-size:12px;
+    margin:0 0 23px
+}
+.modal-bike {
+    display:flex;
+    gap:15px;
+    background:var(--surface-2);
+    padding:12px;
+    border-radius:13px;
+    margin-bottom:18px
+}
+.modal-bike .bike-image {
+    width:105px;
+    height:75px;
+    border-radius:9px
+}
+.modal-bike h3 {
+    font:700 15px Manrope;
+    margin:12px 0 5px
+}
+.form-grid {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:13px
+}
+.form-group label {
+    display:block;
+    font-size:10px;
+    color:var(--muted);
+    margin-bottom:6px
+}
+.form-group input,.form-group select {
+    width:100%;
+    border:1px solid var(--border);
+    border-radius:9px;
+    padding:11px;
+    background:var(--surface);
+    color:var(--text);
+    font-size:12px
+}
+.addon-row {
+    display:flex;
+    justify-content:space-between;
+    border:1px solid var(--border);
+    padding:11px;
+    border-radius:9px;
+    margin-top:8px;
+    font-size:11px
+}
+.addon-row input {
+    accent-color:#8ebc35
+}
+.summary {
+    background:var(--surface-2);
+    border-radius:12px;
+    padding:15px;
+    margin:18px 0
+}
+.summary-row {
+    display:flex;
+    justify-content:space-between;
+    color:var(--muted);
+    font-size:11px;
+    margin:7px 0
+}
+.summary-row.total {
+    border-top:1px solid var(--border);
+    padding-top:12px;
+    margin-top:12px;
+    color:var(--text);
+    font-weight:700;
+    font-size:14px
+}
+.modal-actions {
+    display:flex;
+    justify-content:flex-end;
+    gap:10px
+}
+
+/* ========================================
+   TOASTS
+   ======================================== */
+
+.toast {
+    position:fixed;
+    bottom:25px;
+    left:50%;
+    transform:translate(-50%,20px);
+    background:var(--text);
+    color:var(--primary);
+    padding:13px 20px;
+    border-radius:10px;
+    box-shadow:var(--shadow);
+    font-size:12px;
+    opacity:0;
+    pointer-events:none;
+    transition:.3s;
+    z-index:60
+}
+.toast.show {
+    opacity:1;
+    transform:translate(-50%,0)
+}
+.empty-state {
+    text-align:center;
+    padding:65px 20px;
+    background:var(--surface);
+    border:1px dashed var(--border);
+    border-radius:16px;
+    color:var(--muted);
+    grid-column:1/-1
+}
+.empty-state strong {
+    display:block;
+    color:var(--text);
+    font:700 18px Manrope;
+    margin-bottom:8px
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media(max-width:1050px) {
+    .desktop-nav {
+        gap:12px
+    }
+    .bike-grid.compact {
+        grid-template-columns:repeat(2,1fr)
+    }
+    .hero {
+        grid-template-columns:1fr
+    }
+    .hero-visual {
+        display:none
+    }
+    .search-card {
+        grid-template-columns:repeat(2,1fr)
+    }
+    .search-btn {
+        grid-column:span 2
+    }
+    .category-grid {
+        grid-template-columns:repeat(2,1fr)
+    }
+}
