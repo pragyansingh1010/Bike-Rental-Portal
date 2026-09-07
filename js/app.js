@@ -512,3 +512,536 @@ function showPage(page) {
 }
 
 
+// ============================================================
+// BIKE DETAILS MODAL
+// ============================================================
+
+function openDetails(id) {
+
+  const bike =
+    bikes.find(item => item.id === id);
+
+  activeBike = bike;
+
+  $("#modal").innerHTML = `
+
+    <button
+      class="modal-close"
+      data-close
+    >
+      ×
+    </button>
+
+    <span class="eyebrow">
+      ${bike.type} · ${bike.brand}
+    </span>
+
+    <h2>
+      ${bike.model}
+    </h2>
+
+    <p>
+      Everything you need for a smooth,
+      memorable ride.
+    </p>
+
+    <div class="modal-bike">
+
+      <div class="bike-image">
+
+        <span class="bike-mini">
+          ${bike.brand}<br>
+          ${bike.model}
+        </span>
+
+      </div>
+
+      <div>
+
+        <h3>
+          ${money(bike.pricePerDay)}
+          <small>/ day</small>
+        </h3>
+
+        <span class="bike-rating">
+          ★ ${bike.rating}
+          <span>
+            (${bike.reviews} reviews)
+          </span>
+        </span>
+
+        <p>
+          ${bike.engine}
+          · Automatic
+          · Petrol
+        </p>
+
+      </div>
+
+    </div>
+
+    <div class="form-grid">
+
+      <div>
+        <small class="muted">
+          Mileage
+        </small>
+        <h3>
+          42 mpg
+        </h3>
+      </div>
+
+      <div>
+        <small class="muted">
+          Top speed
+        </small>
+        <h3>
+          118 mph
+        </h3>
+      </div>
+
+      <div>
+        <small class="muted">
+          Seat height
+        </small>
+        <h3>
+          31.9 in
+        </h3>
+      </div>
+
+      <div>
+        <small class="muted">
+          Tank capacity
+        </small>
+        <h3>
+          3.7 gal
+        </h3>
+      </div>
+
+    </div>
+
+    <div class="modal-actions">
+
+      <button
+        class="btn outline-btn"
+        data-fav="${bike.id}"
+      >
+        ${
+          favorites.includes(bike.id)
+            ? "♥ Saved"
+            : "♡ Add to favorites"
+        }
+      </button>
+
+      <button
+        class="btn btn-primary"
+        data-rent="${bike.id}"
+      >
+        Rent now
+        <span>→</span>
+      </button>
+
+    </div>
+  `;
+
+  $("#modalBackdrop")
+    .classList.add("open");
+}
+
+
+// ============================================================
+// BOOKING MODAL
+// ============================================================
+
+function openBooking(id) {
+
+  const bike =
+    bikes.find(item => item.id === id);
+
+  activeBike = bike;
+
+  const tomorrow =
+    new Date(
+      Date.now() + 86400000
+    )
+      .toISOString()
+      .slice(0, 10);
+
+  $("#modal").innerHTML = `
+
+    <button
+      class="modal-close"
+      data-close
+    >
+      ×
+    </button>
+
+    <span class="eyebrow">
+      Reserve your ride
+    </span>
+
+    <h2>
+      Book ${bike.model}
+    </h2>
+
+    <p>
+      Flexible dates, transparent pricing,
+      no surprises.
+    </p>
+
+    <div class="modal-bike">
+
+      <div class="bike-image">
+
+        <span class="bike-mini">
+          ${bike.brand}<br>
+          ${bike.model}
+        </span>
+
+      </div>
+
+      <div>
+
+        <h3>
+          ${bike.brand} ${bike.model}
+        </h3>
+
+        <span class="bike-rating">
+          ★ ${bike.rating}
+          ·
+          ${money(bike.pricePerDay)}
+          / day
+        </span>
+
+      </div>
+
+    </div>
+
+    <div class="form-grid">
+
+      <div class="form-group">
+
+        <label>
+          Pick-up date
+        </label>
+
+        <input
+          id="bookingStart"
+          type="date"
+          value="${tomorrow}"
+        >
+
+      </div>
+
+      <div class="form-group">
+
+        <label>
+          Return date
+        </label>
+
+        <input
+          id="bookingEnd"
+          type="date"
+          value="${tomorrow}"
+        >
+
+      </div>
+
+      <div class="form-group">
+
+        <label>
+          Pick-up location
+        </label>
+
+        <input
+          id="bookingLocation"
+          value="San Francisco, CA"
+        >
+
+      </div>
+
+      <div class="form-group">
+
+        <label>
+          Pick-up time
+        </label>
+
+        <input
+          type="time"
+          value="09:00"
+        >
+
+      </div>
+
+    </div>
+
+    <div
+      class="form-group"
+      style="margin-top:18px"
+    >
+
+      <label>
+        Optional add-ons
+      </label>
+
+      <label class="addon-row">
+
+        <span>
+          <input
+            type="checkbox"
+            class="addon"
+            value="12"
+          >
+          Helmet
+        </span>
+
+        <b>$12</b>
+
+      </label>
+
+      <label class="addon-row">
+
+        <span>
+          <input
+            type="checkbox"
+            class="addon"
+            value="8"
+          >
+          Phone holder
+        </span>
+
+        <b>$8</b>
+
+      </label>
+
+      <label class="addon-row">
+
+        <span>
+          <input
+            type="checkbox"
+            class="addon"
+            value="20"
+          >
+          Extra insurance
+        </span>
+
+        <b>$20</b>
+
+      </label>
+
+    </div>
+
+    <div
+      class="summary"
+      id="bookingSummary"
+    ></div>
+
+    <div class="modal-actions">
+
+      <button
+        class="btn outline-btn"
+        data-close
+      >
+        Cancel
+      </button>
+
+      <button
+        class="btn btn-primary"
+        id="confirmBooking"
+      >
+        Confirm booking
+        <span>→</span>
+      </button>
+
+    </div>
+  `;
+
+  $("#modalBackdrop")
+    .classList.add("open");
+
+  updateBookingSummary();
+
+  ["bookingStart", "bookingEnd"]
+    .forEach(id =>
+      $("#" + id)
+        .addEventListener(
+          "change",
+          updateBookingSummary
+        )
+    );
+
+  $$(".addon").forEach(
+    input =>
+      input.addEventListener(
+        "change",
+        updateBookingSummary
+      )
+  );
+}
+
+
+// ============================================================
+// BOOKING PRICE CALCULATION
+// ============================================================
+
+function updateBookingSummary() {
+
+  if (!$("#bookingSummary")) {
+    return;
+  }
+
+  const start =
+    new Date(
+      $("#bookingStart").value
+    );
+
+  const end =
+    new Date(
+      $("#bookingEnd").value
+    );
+
+  const days =
+    Math.max(
+      1,
+      Math.ceil(
+        (end - start) /
+        86400000
+      ) || 1
+    );
+
+  const addons =
+    $$(".addon:checked")
+      .reduce(
+        (sum, input) =>
+          sum + Number(input.value),
+        0
+      );
+
+  const base =
+    days *
+    activeBike.pricePerDay;
+
+  const fee =
+    Math.round(
+      (base + addons) * 0.08
+    );
+
+  const total =
+    base +
+    addons +
+    fee;
+
+  $("#bookingSummary").innerHTML = `
+
+    <div class="summary-row">
+
+      <span>
+        Rental ·
+        ${days}
+        day${days > 1 ? "s" : ""}
+      </span>
+
+      <b>
+        ${money(base)}
+      </b>
+
+    </div>
+
+    <div class="summary-row">
+
+      <span>
+        Add-ons
+      </span>
+
+      <b>
+        ${money(addons)}
+      </b>
+
+    </div>
+
+    <div class="summary-row">
+
+      <span>
+        Service fee
+      </span>
+
+      <b>
+        ${money(fee)}
+      </b>
+
+    </div>
+
+    <div class="summary-row total">
+
+      <span>
+        Total
+      </span>
+
+      <b>
+        ${money(total)}
+      </b>
+
+    </div>
+  `;
+
+  $("#confirmBooking")
+    .dataset.total = total;
+}
+
+
+// ============================================================
+// CONFIRM BOOKING
+// ============================================================
+
+function confirmBooking() {
+
+  const start =
+    $("#bookingStart").value;
+
+  const end =
+    $("#bookingEnd").value;
+
+  const total =
+    Number(
+      $("#confirmBooking")
+        .dataset.total
+    );
+
+  bookings.unshift({
+    id:
+      "RR-" +
+      Math.floor(
+        100000 +
+        Math.random() *
+        899999
+      ),
+
+    bikeId:
+      activeBike.id,
+
+    start,
+    end,
+
+    location:
+      $("#bookingLocation").value,
+
+    total,
+
+    status:
+      "upcoming"
+  });
+
+  saveState();
+
+  $("#modalBackdrop")
+    .classList.remove("open");
+
+  toastMessage(
+    "Booking confirmed! Your ride is ready."
+  );
+
+  renderRentals();
+  renderDashboard();
+}
+
+
