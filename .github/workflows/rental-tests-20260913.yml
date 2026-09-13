@@ -1,0 +1,10 @@
+name: Bike Rental Duration Tests
+on:
+  push:
+    branches: [main]
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: node tests/rental_state.js
